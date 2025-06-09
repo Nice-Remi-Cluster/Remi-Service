@@ -1,3 +1,7 @@
-from app.models.user import User
 
-__all__ = ["User"]
+from .user import User, UserBind
+
+__ALL__ = [
+    "User",
+    "UserBind",
+]

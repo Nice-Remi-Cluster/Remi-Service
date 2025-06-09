@@ -10,3 +10,7 @@ casbin_e = casbin.Enforcer(
 
 casbin_e.add_function("key_match2", op.key_match2)
 
+
+def validate_casbin(user: str, path: str, method: str):
+    return casbin_e.enforce(user, path, method)
+
