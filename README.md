@@ -12,8 +12,8 @@ uvicorn run:app --reload
 ### 初始化迁移（仅首次使用）
 
 ```powershell
-aerich init -t cfg.config.TORTOISE_ORM
-aerich init-db
+aerich init -t cfgs.config.TORTOISE_ORM
+// aerich init-db
 ```
 
 ### 创建新的迁移

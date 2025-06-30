@@ -10,7 +10,6 @@ from tortoise.exceptions import IntegrityError, DoesNotExist
 
 from app.schemas.responses.user import UserResponseQQ, UserBindResponse, GetUUIDResponse
 from app.schemas.user import UserCreateQQ
-from app.utils.secure.pwd import check_password
 
 r = APIRouter(
     prefix="/user",
@@ -52,6 +51,7 @@ async def create_user_by_qq(user_data: UserCreateQQ):
 
 @r.get("/get-uuid", response_model=GetUUIDResponse)
 async def get_uuid(bind_type: UserBindType, bind_content: str):
+    """通过bind内容获取用户的uuid"""
     try:
         user = await UserBind.get_user_by_bind(bind_type, bind_content)
         if user:
@@ -74,21 +74,19 @@ async def get_uuid(bind_type: UserBindType, bind_content: str):
             detail=f"获取用户uuid失败: {str(e)}"
         )
 
-@r.get("/bind", response_model=UserBindResponse)
-async def bind(uuid: str, bind_type: UserBindType, bind_content: str, bind_name: str | None = None):
+@r.get("/add-bind", response_model=UserBindResponse)
+async def add_bind(uuid: str, bind_type: UserBindType, bind_content: str, bind_name: str | None = None):
+    """添加一个新的用户账户绑定关系"""
     try:
         if await UserBind.get_user_by_bind(bind_type, bind_content):
             raise IntegrityError()
         user = await User.get(uuid=uuid)
         await user.add_bind(bind_type, bind_content, bind_name)
         return {
-            "success": True,
-            "data": {
-                "uuid": uuid,
-                "bind_type": bind_type,
-                "bind_content": bind_content,
-                "bind_name": bind_name or ""
-            }
+            "uuid": uuid,
+            "bind_type": bind_type,
+            "bind_content": bind_content,
+            "bind_name": bind_name or ""
         }
     except IntegrityError:
         raise HTTPException(
@@ -104,20 +102,20 @@ async def bind(uuid: str, bind_type: UserBindType, bind_content: str, bind_name:
 
 
 
-@r.post("/validate_password", status_code=status.HTTP_200_OK)
-async def validate_password(user_email: EmailStr, password: str):
-    """
-    密码验证
-    仅作为调试使用，任何时候都不要在外部直接请求密码验证，可能会被网络抓包篡改
-    """
-    try:
-        user = await User.get(email=user_email)
-        if check_password(password, user.password_hash):
-            return {"valid": True}
-        else:
-            return {"valid": False}
-    except DoesNotExist:
-        raise HTTPException(
-            status_code=status.HTTP_404_NOT_FOUND,
-            detail="用户不存在"
-        )
+# @r.post("/validate_password", status_code=status.HTTP_200_OK)
+# async def validate_password(user_email: EmailStr, password: str):
+#     """
+#     密码验证
+#     仅作为调试使用，任何时候都不要在外部直接请求密码验证，可能会被网络抓包篡改
+#     """
+#     try:
+#         user = await User.get(email=user_email)
+#         if check_password(password, user.password_hash):
+#             return {"valid": True}
+#         else:
+#             return {"valid": False}
+#     except DoesNotExist:
+#         raise HTTPException(
+#             status_code=status.HTTP_404_NOT_FOUND,
+#             detail="用户不存在"
+#         )

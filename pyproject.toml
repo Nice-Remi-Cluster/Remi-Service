@@ -1,6 +1,6 @@
 [project]
 name = "remi-service"
-version = "0.1.0"
+version = "0.1.1"
 description = "Add your description here"
 readme = "README.md"
 requires-python = ">=3.12"
@@ -25,4 +25,4 @@ location = "./migrations"
 src_folder = "./."
 
 [tool.uv.sources]
-wahlap-mai-ass-expander = { path = "../Wahlap-Mai-Ass-Expander", editable = true }
+wahlap-mai-ass-expander = { path = "../Wahlap-Mai-Ass-Expander" }

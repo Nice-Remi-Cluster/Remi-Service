@@ -23,6 +23,7 @@ r = APIRouter(
 
 @r.get("/get-uid", response_model=MaiCNGetUidResponse)
 async def get_maimai_cn_uid(qr_code_content: str):
+    """通过微信二维码获取maimai cn的uid"""
     try:
         client = mai_cn_client_constructor()
         response = await client.qr_scan(qr_code_content)
@@ -34,13 +35,13 @@ async def get_maimai_cn_uid(qr_code_content: str):
         )
     except QrCodeExpired:
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail="二维码已过期"
         )
     except HTTPError as e:
         logger.error(e)
         raise HTTPException(
-            status_code=status.HTTP_400_BAD_REQUEST,
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"由于网络原因，获取用户uuid失败，重试可能会解决问题"
         )
     except Exception as e:
