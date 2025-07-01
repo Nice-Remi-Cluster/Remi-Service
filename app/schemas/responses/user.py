@@ -14,7 +14,7 @@ class UserResponseQQ(BaseModel):
     }
 
 class UserBindResponse(BaseModel):
-    """请求bing新账户的返回内容的请求体"""
+    """请求bind新账户的返回内容的请求体"""
     uuid: str
     bind_type: UserBindType
     bind_content: str

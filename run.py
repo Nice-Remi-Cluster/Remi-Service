@@ -28,28 +28,6 @@ app = FastAPI(
 
 app.include_router(v1_router)
 
-# @app.middleware("http")
-# async def source_check(request: Request, call_next):
-#     if request.url.path in ["/docs", "/openapi.json", "/redoc"]:
-#         return await call_next(request)
-#
-#     authorization: str = request.headers.get("Authorization")
-#     if not authorization:
-#         return JSONResponse(
-#             content={"message": "Authorization needed."},
-#             status_code=HTTP_401_UNAUTHORIZED,
-#         )
-#
-#     if authorization not in ["RemiBot"]:
-#         return JSONResponse(
-#             content={"message": "Authorization failed."},
-#             status_code=HTTP_401_UNAUTHORIZED,
-#         )
-#
-#     response = await call_next(request)
-#     return response
-
-
 if __name__ == "__main__":
     import uvicorn
 

@@ -1,9 +1,9 @@
-FastapiHost = "127.0.0.1"
+FastapiHost = "0.0.0.0"
 FastapiPort = 8000
 DatabaseUrl = "sqlite://db.sqlite3"
 
 TORTOISE_ORM = {
-    "connections": {"default": "sqlite://data/db.sqlite3"},
+    "connections": {"default": "mysql://username:password@host:port/database"},
     "apps": {
         "models": {
             "models": ["app.models", "aerich.models"],
@@ -11,7 +11,3 @@ TORTOISE_ORM = {
         },
     },
 }
-
-# CasbinDB = "mysql+aiomysql://user:pwd@127.0.0.1:3306/exampledb"
-CasbinPolicyPath = "cfgs/casbin_policy.csv"
-CasbinModelPath = "cfgs/casbin_model.conf"
