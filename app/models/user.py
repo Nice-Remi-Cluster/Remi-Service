@@ -67,7 +67,10 @@ class UserBind(models.Model):
     class Meta:  # type: ignore
         # https://tortoise.github.io/models.html?h=meta#tortoise.models.Model.Meta.unique_together
         # 添加联合唯一约束，确保同一个用户不会重复绑定相同内容
-        unique_together = (("user", "bind_type", "bind_content"),)
+        unique_together = (
+            ("user", "bind_type", "bind_content"),
+            ("user", "bind_type", "bind_name")
+        )
     
     async def save(self, *args, **kwargs) -> None:
         """
