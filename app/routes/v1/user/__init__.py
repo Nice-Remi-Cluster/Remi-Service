@@ -81,12 +81,13 @@ async def add_bind(uuid: str, bind_type: UserBindType, bind_content: str, bind_n
         if await UserBind.get_user_by_bind(bind_type, bind_content):
             raise IntegrityError()
         user = await User.get(uuid=uuid)
-        await user.add_bind(bind_type, bind_content, bind_name)
+        user_bind = await user.add_bind(bind_type, bind_content, bind_name)
         return {
             "uuid": uuid,
             "bind_type": bind_type,
             "bind_content": bind_content,
-            "bind_name": bind_name or ""
+            "bind_name": bind_name or "",
+            "is_default": user_bind.is_default
         }
     except IntegrityError:
         raise HTTPException(
@@ -99,6 +100,27 @@ async def add_bind(uuid: str, bind_type: UserBindType, bind_content: str, bind_n
             status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
             detail=f"绑定失败: {str(e)}"
         )
+
+@r.get("/get-binds", response_model=list[UserBindResponse])
+async def get_binds(uuid: str, bind_type: UserBindType, default: bool = False):
+    """
+    获取用户指定所有绑定
+    """
+    user = await User.get(uuid=uuid)
+    binds = await UserBind.get_user_binds(user=user, bind_type=bind_type)
+
+    if default:
+        binds = [bind for bind in binds if bind.is_default]
+
+    return [
+        {
+            "uuid": bind.user.uuid,
+            "bind_type": bind.bind_type,
+            "bind_content": bind.bind_content,
+            "bind_name": bind.bind_name or "",
+            "is_default": bind.is_default
+        } for bind in binds
+    ]
 
 
 

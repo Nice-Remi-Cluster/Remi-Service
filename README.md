@@ -9,13 +9,6 @@ uvicorn run:app --reload
 
 本项目使用Aerich进行数据库迁移管理，以下是常用操作：
 
-### 初始化迁移（仅首次使用）
-
-```powershell
-aerich init -t cfgs.config.TORTOISE_ORM
-// aerich init-db
-```
-
 ### 创建新的迁移
 
 当您修改了模型后，使用以下命令创建新的迁移文件：

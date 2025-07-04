@@ -19,6 +19,7 @@ class UserBindResponse(BaseModel):
     bind_type: UserBindType
     bind_content: str
     bind_name: str
+    is_default: bool
 
 class GetUUIDResponse(BaseModel):
     """获取uuid的返回模型"""
