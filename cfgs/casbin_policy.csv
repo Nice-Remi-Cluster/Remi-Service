@@ -1,3 +1,0 @@
-p, superadmin, *, *, allow
-p, guest, luoxue, read, allow
-p, default, luoxue, read, allow
