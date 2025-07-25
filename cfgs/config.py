@@ -1,3 +1,5 @@
+from httpx import Proxy
+
 FastapiHost = "0.0.0.0"
 FastapiPort = 8000
 

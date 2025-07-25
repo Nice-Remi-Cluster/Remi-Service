@@ -9,7 +9,7 @@ from app.models.user import User, UserBind
 from tortoise.exceptions import IntegrityError, DoesNotExist
 
 from app.schemas.responses.user import UserResponseQQ, UserBindResponse, GetUUIDResponse
-from app.schemas.user import UserCreateQQ
+from app.schemas.user import UserCreateQQ, DivingFishBindCreate
 
 r = APIRouter(
     prefix="/user",
@@ -122,6 +122,48 @@ async def get_binds(uuid: str, bind_type: UserBindType, default: bool = False):
         } for bind in binds
     ]
 
+
+@r.post("/add-divingfish-bind", response_model=UserBindResponse)
+async def add_divingfish_bind(uuid: str, bind_data: DivingFishBindCreate):
+    """添加水鱼查分器绑定（账号密码方式）"""
+    try:
+        import json
+        
+        # 将账号密码组合成JSON格式
+        bind_content = json.dumps({
+            "username": bind_data.username,
+            "password": bind_data.password
+        }, ensure_ascii=False)
+        
+        # 检查是否已存在相同的绑定内容
+        if await UserBind.get_user_by_bind(UserBindType.DivingFish, bind_content):
+            raise IntegrityError()
+            
+        user = await User.get(uuid=uuid)
+        user_bind = await user.add_bind(
+            UserBindType.DivingFish, 
+            bind_content, 
+            bind_data.bind_name or bind_data.username
+        )
+        
+        return {
+            "uuid": uuid,
+            "bind_type": UserBindType.DivingFish,
+            "bind_content": bind_content,
+            "bind_name": user_bind.bind_name,
+            "is_default": user_bind.is_default
+        }
+    except IntegrityError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="该水鱼账号已与其他用户绑定"
+        )
+    except Exception as e:
+        logger.exception(e)
+        raise HTTPException(
+            status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+            detail=f"水鱼绑定失败: {str(e)}"
+        )
 
 
 # @r.post("/validate_password", status_code=status.HTTP_200_OK)
